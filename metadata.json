@@ -1,0 +1,12 @@
+{
+  "name": "SehatSetu",
+  "description": "Anywhere Healthcare - Complete mobile healthcare platform for doctor discovery, video consultations, in-clinic bookings, AI symptom navigation, digital prescriptions, and family health management across India.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
