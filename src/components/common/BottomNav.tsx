@@ -1,10 +1,16 @@
 import React from 'react';
-import { Home, Search, Calendar, Video, User } from 'lucide-react';
+import { Home, Search, Calendar, Video } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ActiveTab } from '../../types';
 
 export const BottomNav: React.FC = () => {
-  const { activeTab, setActiveTab, activeScreen, setActiveScreen, appointments } = useApp();
+  const {
+    activeTab,
+    setActiveTab,
+    activeScreen,
+    setActiveScreen,
+    appointments,
+  } = useApp();
 
   const upcomingCount = appointments.filter((a) => a.status === 'UPCOMING').length;
 
@@ -13,7 +19,6 @@ export const BottomNav: React.FC = () => {
     { id: 'find-doctors', label: 'Find Doctors', icon: Search },
     { id: 'appointments', label: 'Appointments', icon: Calendar },
     { id: 'consultations', label: 'Consultations', icon: Video },
-    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   const handleTabClick = (tabId: ActiveTab) => {
@@ -26,11 +31,11 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      id="persistent-bottom-navigation"
+      id="persistent-top-navigation"
       aria-label="Main Navigation"
-      className="fixed bottom-0 left-0 right-0 max-w-md mx-auto z-40 bg-white border-t border-slate-200/90 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] px-2 py-1.5"
+      className="w-full bg-white/95 border border-slate-200 shadow-sm rounded-2xl px-2 py-2"
     >
-      <div className="flex items-center justify-around">
+      <div className="flex items-center justify-between gap-2 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id && !activeScreen;
@@ -40,27 +45,21 @@ export const BottomNav: React.FC = () => {
               key={tab.id}
               id={`nav-tab-${tab.id}`}
               onClick={() => handleTabClick(tab.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
+              className={`flex min-w-[110px] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                 isActive
-                  ? 'text-emerald-800 font-bold'
-                  : 'text-slate-500 hover:text-slate-800 font-medium'
+                  ? 'bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-100'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <div
-                className={`relative p-1 rounded-full transition-transform ${
-                  isActive ? 'bg-emerald-50 text-emerald-800 scale-110' : ''
-                }`}
-              >
-                <Icon className="w-5 h-5" />
+              <div className="relative">
+                <Icon className="w-4 h-4" />
                 {tab.id === 'appointments' && upcomingCount > 0 && (
-                  <span className="absolute -top-0.5 -right-1 w-4 h-4 bg-emerald-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">
+                  <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-emerald-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">
                     {upcomingCount}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-0.5 tracking-tight leading-none whitespace-nowrap">
-                {tab.label}
-              </span>
+              <span className="whitespace-nowrap">{tab.label}</span>
             </button>
           );
         })}

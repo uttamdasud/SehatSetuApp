@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
-import { StatusBar } from './components/common/StatusBar';
 import { Header } from './components/common/Header';
 import { BottomNav } from './components/common/BottomNav';
 import { Toast } from './components/common/Toast';
@@ -19,10 +18,11 @@ import { ProfileScreen } from './components/profile/ProfileScreen';
 import { HospitalDetailModal } from './components/hospitals/HospitalDetailModal';
 import { BiometricAuthModal } from './components/biometrics/BiometricAuthModal';
 import { DoctorOnboardingModal } from './components/onboarding/DoctorOnboardingModal';
-import { AdminPortalModal } from './components/admin/AdminPortalModal';
 import { ReceptionistRosterModal } from './components/admin/ReceptionistRosterModal';
+import { AuthScreen } from './components/auth/AuthScreen';
 
 const MainAppContent: React.FC = () => {
+  const [showAuthScreen, setShowAuthScreen] = useState(false);
   const {
     activeTab,
     activeScreen,
@@ -32,7 +32,6 @@ const MainAppContent: React.FC = () => {
     isBookingOpen,
     activeCall,
     showOnboardingModal,
-    showAdminPortal,
     showReceptionistRosterModal,
     biometricPrompt,
   } = useApp();
@@ -72,25 +71,21 @@ const MainAppContent: React.FC = () => {
     activeScreen === 'hospital-detail';
 
   return (
-    <div className="min-h-screen bg-slate-200/70 flex justify-center items-start sm:py-4">
-      {/* Mobile Device Frame Container */}
-      <div
-        id="sehatsetu-mobile-app-root"
-        className="w-full max-w-md bg-slate-50 min-h-screen sm:min-h-[844px] sm:max-h-[920px] sm:rounded-4xl shadow-2xl flex flex-col relative overflow-hidden border border-slate-300/60"
-      >
-        {/* Status Bar */}
-        <StatusBar />
-
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Global App Header (hidden in sub-screen views like doctor profile or symptom checker which have their own headers) */}
-        {!isFullScreenSubView && <Header />}
+        {!isFullScreenSubView && <Header onSignIn={() => setShowAuthScreen(true)} />}
 
-        {/* Dynamic Screen Content with smooth scroll */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden relative no-scrollbar">
+        {!isFullScreenSubView && !activeCall.isActive && (
+          <div className="sticky top-0 z-30 px-4 pt-2 pb-3 bg-slate-100/90 backdrop-blur-sm">
+            <BottomNav />
+          </div>
+        )}
+
+        {/* Dynamic Screen Content */}
+        <main className="px-4 pb-10 md:px-6">
           {renderActiveScreen()}
         </main>
-
-        {/* Persistent Bottom Navigation (hidden during sub-screens and active call) */}
-        {!isFullScreenSubView && !activeCall.isActive && <BottomNav />}
 
         {/* Modals & Overlays */}
         {showLocationModal && <LocationModal />}
@@ -99,9 +94,9 @@ const MainAppContent: React.FC = () => {
         {selectedPrescription && <DigitalPrescriptionModal />}
         {activeCall.isActive && <VideoRoomModal />}
         {showOnboardingModal && <DoctorOnboardingModal />}
-        {showAdminPortal && <AdminPortalModal />}
         {showReceptionistRosterModal && <ReceptionistRosterModal />}
         {biometricPrompt && biometricPrompt.isOpen && <BiometricAuthModal />}
+        {showAuthScreen && <AuthScreen onDismiss={() => setShowAuthScreen(false)} />}
 
         {/* System Toast Alerts */}
         <Toast />

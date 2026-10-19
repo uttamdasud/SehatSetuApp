@@ -29,3 +29,82 @@
 .animate-pulse-subtle {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@keyframes home-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes home-soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes home-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(110 231 183 / 40%); }
+  50% { box-shadow: 0 0 0 5px rgb(110 231 183 / 0%); }
+}
+
+#home-screen-view {
+  animation: home-rise-in 520ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.home-hero-copy {
+  animation: home-rise-in 620ms cubic-bezier(0.2, 0.75, 0.25, 1) 60ms both;
+}
+
+.home-hero-aside {
+  animation: home-rise-in 620ms cubic-bezier(0.2, 0.75, 0.25, 1) 180ms both;
+}
+
+.home-doctor-float {
+  animation: home-soft-float 5s ease-in-out 900ms infinite;
+}
+
+.home-live-dot {
+  animation: home-live-pulse 2.2s ease-out infinite;
+}
+
+.home-stagger > * {
+  animation: home-rise-in 480ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.home-stagger > *:nth-child(2) { animation-delay: 55ms; }
+.home-stagger > *:nth-child(3) { animation-delay: 110ms; }
+.home-stagger > *:nth-child(4) { animation-delay: 165ms; }
+.home-stagger > *:nth-child(5) { animation-delay: 220ms; }
+
+.home-interactive-card {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.home-interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgb(15 23 42 / 8%);
+}
+
+.home-interactive-card:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.home-interactive-card:focus-visible {
+  outline: 3px solid rgb(16 185 129 / 45%);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

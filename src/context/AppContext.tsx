@@ -32,6 +32,7 @@ import {
   calculateDoctorDaySerialNumber,
   generateDoctorTokenString,
 } from '../utils/receptionistNotifier';
+import { AuthSession, createAuthSession, logoutAuthSession } from '../utils/authSession';
 
 export interface BookingDraft {
   doctor: Doctor | null;
@@ -89,6 +90,8 @@ interface AppContextType {
   // Navigation & Tabs
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
+  activeProfileTab: 'OVERVIEW' | 'RECORDS' | 'FAMILY' | 'SETTINGS';
+  setActiveProfileTab: (tab: 'OVERVIEW' | 'RECORDS' | 'FAMILY' | 'SETTINGS') => void;
 
   // Modals & Sub-Screens
   activeScreen: string | null;
@@ -102,7 +105,11 @@ interface AppContextType {
   selectedRecord: MedicalRecord | null;
   setSelectedRecord: (record: MedicalRecord | null) => void;
 
-  // User Profile & Location
+  // Authentication & User Profile
+  isAuthenticated: boolean;
+  authSession: AuthSession;
+  loginUser: (identifier: string, password: string) => boolean;
+  logoutUser: () => void;
   userProfile: UserProfile;
   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile>>;
   user: {
@@ -158,14 +165,8 @@ interface AppContextType {
   approveDoctorOnboardingRequest: (requestId: string) => Doctor | null;
   rejectDoctorOnboardingRequest: (requestId: string, reason?: string) => void;
 
-  // Owner Admin Portal & Monetization
-  showAdminPortal: boolean;
-  setShowAdminPortal: (show: boolean) => void;
-  isOwnerAuthenticated: boolean;
-  loginOwner: (passcode: string) => boolean;
-  logoutOwner: () => void;
+  // Payment & Monetization
   platformFeeSettings: PlatformFeeSettings;
-  updatePlatformFeeSettings: (settings: Partial<PlatformFeeSettings>) => void;
 
   // Doctors & Search
   doctors: Doctor[];
@@ -254,6 +255,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
+  const [activeProfileTab, setActiveProfileTab] = useState<'OVERVIEW' | 'RECORDS' | 'FAMILY' | 'SETTINGS'>('OVERVIEW');
   const [activeScreen, setActiveScreen] = useState<string | null>(null);
 
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
@@ -271,19 +273,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [userProfile, setUserProfile] = useState<UserProfile>({
     id: 'usr-1',
-    name: 'Uttam Das',
+    name: 'User',
     phone: '+91 98765 43210',
-    email: 'uttamdas542@gmail.com',
-    city: 'Agartala',
-    state: 'Tripura',
+    email: 'user@gmail.com',
+    city: 'City',
+    state: 'State',
     avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
-    language: 'English',
-    age: 32,
-    gender: 'Male',
-    bloodGroup: 'B+',
+    language: 'Language',
+    age: '12',
+    gender: 'Gender',
+    bloodGroup: 'Blood Group',
     abhaId: '91-8842-9901-4431',
   });
 
+  const [authSession, setAuthSession] = useState<AuthSession>(() => logoutAuthSession());
   const [activePatientId, setActivePatientId] = useState<string>('usr-1');
 
   // Biometric Authentication State
@@ -301,13 +304,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [biometricPrompt, setBiometricPrompt] = useState<BiometricPromptState | null>(null);
 
-  // Partner Onboarding & Owner Admin State
+  // Partner Onboarding State
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [showAdminPortal, setShowAdminPortal] = useState(false);
-  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false);
-  const [platformFeeSettings, setPlatformFeeSettings] = useState<PlatformFeeSettings>(
-    INITIAL_PLATFORM_FEE_SETTINGS
-  );
+  const platformFeeSettings: PlatformFeeSettings = INITIAL_PLATFORM_FEE_SETTINGS;
   const [onboardingRequests, setOnboardingRequests] = useState<DoctorOnboardingRequest[]>(
     INITIAL_ONBOARDING_REQUESTS
   );
@@ -454,20 +453,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setBiometricPrompt(null);
   };
 
-  // Owner Portal Authentication
-  const loginOwner = (passcode: string): boolean => {
-    if (passcode === '8899' || passcode.toLowerCase() === 'owner') {
-      setIsOwnerAuthenticated(true);
-      return true;
-    }
-    return false;
-  };
-
-  const logoutOwner = () => {
-    setIsOwnerAuthenticated(false);
-    showToast('Owner session locked');
-  };
-
   // Partner Onboarding Application Handlers
   const submitDoctorOnboardingRequest = (
     data: Omit<DoctorOnboardingRequest, 'id' | 'status' | 'submittedDate'>
@@ -579,11 +564,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           : r
       )
     );
-  };
-
-  const updatePlatformFeeSettings = (settings: Partial<PlatformFeeSettings>) => {
-    setPlatformFeeSettings((prev) => ({ ...prev, ...settings }));
-    showToast('Platform fee preferences updated successfully');
   };
 
   const updateDoctorAvailability = (doctorId: string, isAvailable: boolean) => {
@@ -1062,11 +1042,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     familyMembers,
   };
 
+  const isAuthenticated = authSession.isAuthenticated;
+
+  const loginUser = (identifier: string, password: string): boolean => {
+    const normalizedIdentifier = identifier.trim();
+    const normalizedPassword = password.trim();
+
+    if (!normalizedIdentifier || !normalizedPassword || normalizedPassword.length < 4) {
+      return false;
+    }
+
+    const nextSession = createAuthSession({
+      userName: userProfile.name,
+      role: 'patient',
+    });
+
+    setAuthSession(nextSession);
+    setActiveScreen(null);
+    setActiveTab('home');
+    return true;
+  };
+
+  const logoutUser = () => {
+    setAuthSession(logoutAuthSession());
+    setShowNotificationsModal(false);
+    setShowLocationModal(false);
+    setActiveScreen(null);
+    setActiveTab('home');
+    showToast('You have been logged out');
+  };
+
   return (
     <AppContext.Provider
       value={{
         activeTab,
         setActiveTab,
+        activeProfileTab,
+        setActiveProfileTab,
         activeScreen,
         setActiveScreen,
         selectedDoctor,
@@ -1077,6 +1089,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedPrescription,
         selectedRecord,
         setSelectedRecord,
+        isAuthenticated,
+        authSession,
+        loginUser,
+        logoutUser,
         userProfile,
         setUserProfile,
         user,
@@ -1102,13 +1118,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         submitDoctorOnboardingRequest,
         approveDoctorOnboardingRequest,
         rejectDoctorOnboardingRequest,
-        showAdminPortal,
-        setShowAdminPortal,
-        isOwnerAuthenticated,
-        loginOwner,
-        logoutOwner,
         platformFeeSettings,
-        updatePlatformFeeSettings,
         doctors,
         searchQuery,
         setSearchQuery,

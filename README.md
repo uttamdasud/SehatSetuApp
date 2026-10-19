@@ -181,21 +181,24 @@ Consultation
 
 ### Backend
 
-* Add your backend technology here
+* Not yet implemented in the repository; this is a front-end-only prototype.
+* Planned: FastAPI or equivalent server-side API with strict role checks.
 
 ### Database
 
-* Add your database technology here
+* No production database connected in the current build.
+* Planned: MongoDB or PostgreSQL with migration and backup controls.
 
 ### Authentication
 
-* Mobile OTP authentication
+* Current prototype: UI-only mock flow.
+* Planned: secure OTP, session, and role-based authorization system.
 
 ### Development & Deployment
 
-* GitHub
-* Google AI Studio
-* Add your deployment platform here
+* GitHub repository and Vite-based front-end build
+* Runtime config validation for safe public URLs
+* Production deployment controls to be added before use with real patient data
 
 ---
 
@@ -257,6 +260,21 @@ npm run dev
 ```
 
 The application will then be available through the local development URL provided by your development server.
+
+---
+
+## 🚀 Deploy to GitHub Pages
+
+This repository is configured to deploy the Vite frontend to GitHub Pages whenever changes are pushed to `main`.
+
+1. Push the project to the `main` branch of `uttamdasud/SehatSetuApp`.
+2. On GitHub, open **Settings → Pages** and set the build and deployment source to **GitHub Actions**.
+3. Open the repository's **Actions** tab and wait for the **Deploy to GitHub Pages** workflow to finish.
+4. Visit [https://uttamdasud.github.io/SehatSetuApp/](https://uttamdasud.github.io/SehatSetuApp/).
+
+You can also start a deployment manually from **Actions → Deploy to GitHub Pages → Run workflow**.
+
+> GitHub Pages hosts static frontend files only. Authentication in this demo is not backed by a production server, and app data is not securely persisted. Do not use real patient information or production credentials.
 
 ---
 

@@ -54,11 +54,12 @@ export const ProfileScreen: React.FC = () => {
     lockVaultImmediately,
     openBiometricPrompt,
     setShowOnboardingModal,
-    setShowAdminPortal,
     showToast,
+    logoutUser,
+    isAuthenticated,
+    activeProfileTab,
   } = useApp();
 
-  const [activeSubTab, setActiveSubTab] = useState<'RECORDS' | 'FAMILY' | 'SETTINGS'>('RECORDS');
   const [showAddFamilyModal, setShowAddFamilyModal] = useState(false);
   const [showUploadRecordModal, setShowUploadRecordModal] = useState(false);
 
@@ -150,7 +151,8 @@ export const ProfileScreen: React.FC = () => {
 
   return (
     <div id="profile-screen" className="space-y-4 pb-24 animate-in fade-in duration-200">
-      {/* Patient Profile Card */}
+      {/* Patient Profile Overview */}
+      {activeProfileTab === 'OVERVIEW' && (
       <div className="px-4 pt-1">
         <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex items-start space-x-3.5">
@@ -213,49 +215,10 @@ export const ProfileScreen: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Sub Navigation Tabs */}
-      <div className="px-4">
-        <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-2xl">
-          <button
-            id="tab-profile-records"
-            onClick={() => setActiveSubTab('RECORDS')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1 ${
-              activeSubTab === 'RECORDS'
-                ? 'bg-white text-emerald-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            {isVaultLocked && <Lock className="w-3 h-3 text-amber-600" />}
-            <span>Medical Vault</span>
-          </button>
-          <button
-            id="tab-profile-family"
-            onClick={() => setActiveSubTab('FAMILY')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
-              activeSubTab === 'FAMILY'
-                ? 'bg-white text-emerald-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Family ({user.familyMembers.length + 1})
-          </button>
-          <button
-            id="tab-profile-settings"
-            onClick={() => setActiveSubTab('SETTINGS')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
-              activeSubTab === 'SETTINGS'
-                ? 'bg-white text-emerald-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Settings & Security
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* 1. MEDICAL RECORDS VAULT */}
-      {activeSubTab === 'RECORDS' && (
+      {activeProfileTab === 'RECORDS' && (
         <div className="px-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -410,7 +373,7 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       {/* 2. FAMILY MEMBER MANAGEMENT */}
-      {activeSubTab === 'FAMILY' && (
+      {activeProfileTab === 'FAMILY' && (
         <div className="px-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -526,7 +489,7 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       {/* 3. SETTINGS & SECURITY */}
-      {activeSubTab === 'SETTINGS' && (
+      {activeProfileTab === 'SETTINGS' && (
         <div className="px-4 space-y-4">
           {/* BIOMETRIC AUTHENTICATION CARD */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
@@ -706,37 +669,6 @@ export const ProfileScreen: React.FC = () => {
             </button>
           </div>
 
-          {/* APP OWNER ADMIN PORTAL CARD */}
-          <div className="bg-slate-900 text-white rounded-3xl p-4 shadow-md space-y-3 text-xs border border-slate-800">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-slate-800 text-emerald-400 flex items-center justify-center border border-slate-700">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center space-x-1.5">
-                  <h4 className="text-xs font-bold text-white font-heading">
-                    Owner Admin Management
-                  </h4>
-                  <span className="text-[9px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.2 rounded font-bold uppercase">
-                    Restricted
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  Owner dashboard for doctor approvals, directory & platform controls
-                </p>
-              </div>
-            </div>
-
-            <button
-              id="open-admin-portal-btn"
-              onClick={() => setShowAdminPortal(true)}
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 transition-all shadow-md shadow-emerald-950"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>Enter Owner Admin Portal</span>
-            </button>
-          </div>
-
           {/* Emergency Helpline Section */}
           <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-2.5">
             <h4 className="text-xs font-bold text-rose-950 uppercase tracking-wider flex items-center space-x-1.5">
@@ -794,6 +726,20 @@ export const ProfileScreen: React.FC = () => {
               </div>
               <ChevronRight className="w-4 h-4 text-slate-400" />
             </div>
+
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={logoutUser}
+                className="w-full p-3.5 flex items-center justify-between text-left text-rose-700"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <LogOut className="w-4 h-4" />
+                  <span className="font-semibold">Logout</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-rose-500" />
+              </button>
+            )}
           </div>
 
           {/* About SehatSetu */}

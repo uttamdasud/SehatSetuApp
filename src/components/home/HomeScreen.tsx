@@ -47,7 +47,6 @@ export const HomeScreen: React.FC = () => {
     currentLocation,
     setSelectedHospital,
     setShowOnboardingModal,
-    setShowAdminPortal,
   } = useApp();
 
   const availableDoctors = doctors.slice(0, 5);
@@ -111,30 +110,110 @@ export const HomeScreen: React.FC = () => {
   };
 
   return (
-    <div id="home-screen-view" className="space-y-5 pb-24 animate-in fade-in duration-200">
-      {/* Search Bar */}
-      <div className="px-4 -mt-2">
-        <form onSubmit={handleSearchSubmit} className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            id="home-main-search-input"
-            type="text"
-            placeholder="Search doctors, specialties, hospitals..."
-            onFocus={() => setActiveTab('find-doctors')}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200/90 rounded-2xl text-xs font-medium text-slate-900 placeholder:text-slate-400 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-700"
-          />
-        </form>
-      </div>
+    <div id="home-screen-view" className="space-y-6 pb-24 pt-6">
+      <section className="overflow-hidden rounded-[2rem] border border-emerald-100 bg-gradient-to-br from-emerald-950 via-teal-900 to-emerald-800 text-white shadow-[0_24px_60px_rgba(13,58,48,0.28)]">
+        <div className="grid gap-8 p-6 md:grid-cols-[1.3fr_0.7fr] md:p-8 xl:p-10">
+          <div className="flex flex-col justify-center home-hero-copy">
+            <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-100">
+              <span className="h-2 w-2 rounded-full bg-emerald-300" />
+              Trusted digital care
+            </span>
+
+            <h1 className="max-w-xl text-4xl font-black tracking-tight text-white md:text-5xl">
+              Healthcare that fits your life.
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-emerald-50/90 md:text-base">
+              Book trusted doctors, access quick consultations, and manage care from one secure platform built for everyday wellbeing.
+            </p>
+
+            <form onSubmit={handleSearchSubmit} className="mt-6 flex flex-col gap-3 rounded-2xl bg-white/10 p-3 backdrop-blur-sm md:flex-row md:items-center md:gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  id="home-main-search-input"
+                  type="text"
+                  placeholder="Search doctors, specialties or hospitals"
+                  onFocus={() => setActiveTab('find-doctors')}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white px-10 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none ring-0 transition focus:border-emerald-300"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-xl bg-white px-4 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
+              >
+                Find Care
+              </button>
+            </form>
+
+            <div className="mt-6 flex flex-wrap items-center gap-5 text-sm text-emerald-50/90">
+              <div>
+                <span className="block text-2xl font-black text-white">12k+</span>
+                <span>consultations</span>
+              </div>
+              <div>
+                <span className="block text-2xl font-black text-white">4.9/5</span>
+                <span>patient rating</span>
+              </div>
+              <div>
+                <span className="block text-2xl font-black text-white">150+</span>
+                <span>specialists</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center home-hero-aside">
+            <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur-sm home-doctor-float">
+              <div className="rounded-[1.5rem] bg-white p-4 text-slate-900">
+                <div className="mb-3 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700">Doctor online</div>
+                    <div className="mt-1 text-lg font-black font-heading">Dr. Aisha Roy</div>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-800">Available now</span>
+                </div>
+
+                <div className="rounded-2xl bg-slate-100 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600" />
+                    <div>
+                      <div className="text-sm font-bold text-slate-900">General Physician</div>
+                      <div className="text-xs text-slate-500">Next slot · Today, 6:30 PM</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs text-slate-600">
+                  <div className="rounded-xl bg-slate-100 p-3">
+                    <div className="font-black text-slate-900">₹299</div>
+                    <div>Video</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-100 p-3">
+                    <div className="font-black text-slate-900">₹799</div>
+                    <div>Clinic</div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => startInstantConsultation()}
+                  className="mt-4 w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-800"
+                >
+                  Start consultation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Quick Actions 4-Grid */}
-      <div className="px-4">
-        <div className="grid grid-cols-4 gap-2.5">
+      <div className="px-1 md:px-0">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 home-stagger">
           {/* Consult Now */}
           <button
             id="quick-action-consult-now"
             onClick={() => startInstantConsultation()}
-            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all"
+            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all home-interactive-card"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-1.5 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
               <Video className="w-5 h-5" />
@@ -149,7 +228,7 @@ export const HomeScreen: React.FC = () => {
               setSelectedSpecialtyFilter('ALL');
               setActiveTab('find-doctors');
             }}
-            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all"
+            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all home-interactive-card"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-1.5 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
               <UserCheck className="w-5 h-5" />
@@ -161,7 +240,7 @@ export const HomeScreen: React.FC = () => {
           <button
             id="quick-action-symptom-checker"
             onClick={() => setActiveScreen('symptom-checker')}
-            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all"
+            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all home-interactive-card"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-1.5 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
               <BrainCircuit className="w-5 h-5" />
@@ -173,7 +252,7 @@ export const HomeScreen: React.FC = () => {
           <button
             id="quick-action-book-appointment"
             onClick={() => setActiveTab('find-doctors')}
-            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all"
+            className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 flex flex-col items-center justify-center text-center group active:scale-95 transition-all home-interactive-card"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-1.5 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
               <Calendar className="w-5 h-5" />
@@ -191,7 +270,7 @@ export const HomeScreen: React.FC = () => {
         >
           <div className="relative z-10 max-w-[240px]">
             <div className="inline-flex items-center space-x-1 bg-emerald-700/80 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 text-emerald-100">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 home-live-dot" />
               <span>Doctors Online Now</span>
             </div>
             <h3 className="text-lg font-bold font-heading leading-tight">Need medical help now?</h3>
@@ -278,7 +357,7 @@ export const HomeScreen: React.FC = () => {
               key={spec.id}
               id={`specialty-card-${spec.id.toLowerCase().replace(/\s+/g, '-')}`}
               onClick={() => handleSpecialtyClick(spec.id)}
-              className="min-w-[124px] bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm text-center flex flex-col items-center justify-between shrink-0 group active:scale-95 transition-all"
+              className="min-w-[124px] bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm text-center flex flex-col items-center justify-between shrink-0 group active:scale-95 transition-all home-interactive-card"
             >
               <div className="w-12 h-12 rounded-2xl bg-emerald-50/80 group-hover:bg-emerald-100/90 flex items-center justify-center mb-2 transition-colors">
                 {getSpecialtyIcon(spec.id)}
@@ -314,12 +393,12 @@ export const HomeScreen: React.FC = () => {
         </div>
 
         {/* Doctor Cards List */}
-        <div className="space-y-3">
+        <div className="space-y-3 home-stagger">
           {availableDoctors.map((doc) => (
             <div
               key={doc.id}
               id={`home-doctor-card-${doc.id}`}
-              className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all"
+              className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all home-interactive-card"
             >
               {/* Top Row: Photo & Details */}
               <div className="flex items-start space-x-3.5">
@@ -414,11 +493,11 @@ export const HomeScreen: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-2.5">
+        <div className="space-y-2.5 home-stagger">
           <div
             id="hospital-card-ils"
             onClick={() => setActiveScreen('hospital-detail')}
-            className="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between hover:border-slate-300 cursor-pointer transition-all active:scale-[0.99]"
+            className="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between hover:border-slate-300 cursor-pointer transition-all active:scale-[0.99] home-interactive-card"
           >
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
@@ -436,7 +515,7 @@ export const HomeScreen: React.FC = () => {
           <div
             id="hospital-card-apollo"
             onClick={() => setActiveScreen('hospital-detail')}
-            className="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between hover:border-slate-300 cursor-pointer transition-all active:scale-[0.99]"
+            className="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between hover:border-slate-300 cursor-pointer transition-all active:scale-[0.99] home-interactive-card"
           >
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
